@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Weather Service API
+  version: 1.0.0
+  description: Returns today's short forecast and a temperature characterization.
+servers:
+  - url: http://localhost:8080
+paths:
+  /weather:
+    get:
+      summary: Get today's weather summary for a coordinate
+      parameters:
+        - in: query
+          name: lat
+          required: true
+          schema:
+            type: number
+            format: double
+          description: Latitude between -90 and 90.
+        - in: query
+          name: lon
+          required: true
+          schema:
+            type: number
+            format: double
+          description: Longitude between -180 and 180.
+      responses:
+        '200':
+          description: Successful weather response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherResponse'
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream weather provider failure.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    WeatherResponse:
+      type: object
+      properties:
+        short_forecast:
+          type: string
+        temperature:
+          type: integer
+        temperature_unit:
+          type: string
+        temperature_characterization:
+          type: string
+          enum: [hot, moderate, cold]
+      required:
+        - short_forecast
+        - temperature
+        - temperature_unit
+        - temperature_characterization
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
